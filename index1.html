@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Animation</title>
+    <style>
+        @font-face {
+            font-family: "Times";
+            src: url("TimesNRCondensed.otf") format("opentype");
+            font-weight: initial;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        #typed-strings {
+            display: none; /* Hide the original text container */
+        }
+        h1 {
+            color: white;
+            font-family: "Times";
+            font-weight: initial;
+            width: 90%;
+            position: absolute;
+            text-align: center;
+            top: 42%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            letter-spacing: -7px;
+            line-height: 117%;
+            font-size: 10vh;
+            -webkit-text-stroke: 2px white;
+        }
+
+        .caption-1, .caption-2 {
+            color: white;
+            font-family: "Arial";
+            width: 100%;
+            position: absolute;
+            text-align: center;
+            font-size: 2.8vh;
+            letter-spacing: 0px;
+            -webkit-text-stroke: 1px white;
+        }
+
+        .caption-1 {
+            top: 3.1%;
+        }
+
+        .caption-2 {
+            bottom: 3.5%;
+        }
+
+
+p {
+    font-family: "Times";
+            font-weight: initial;
+            font-size: 5em;
+}
+    </style>
+         <script src="p5.min.js"></script>
+</head>
+
+<body>
+    <!-- Hidden container for the strings -->
+    <div id="typed-strings">
+        <p>...</p>
+        <p>&nbsp...&nbsp</p>
+        <p>...</p>
+        <p>I could tell them about something, but they’d just respond with, “Oh, okay, cool.” Sorry if my answers sound sad — it’s just how it is.</p>
+        <p>...</p>
+        <p>...</p>
+        <p>...</p>
+        <p>I always felt close to them. Some kind of connection to dive deeper — into how the very beginning feels, an early stage of everything. There was a huge fixation on it. I needed them. I can feel so I know.</p>
+    </div>
+
+
+<div class="caption-1">Sonya</div>
+<div class="caption-2">Geography</div>
+
+    <!-- Typing effect target -->
+    <h1 id="typed"></h1>
+
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+    <script src="script1.js"></script>
+    <script>
+        var typed = new Typed('#typed', {
+            stringsElement: '#typed-strings',
+            typeSpeed: 40,         // Speed of typing
+            backSpeed: 40,         // Speed of backspacing (if needed)
+            startDelay: 500,       // Delay before typing starts
+            backDelay: 500,       // Delay before backspacing starts
+            loop: false,           // Set to true if you want it to loop
+            showCursor: false,      // Display the blinking cursor
+            cursorChar: '|',       // Customize cursor character
+            smartBackspace: true
+        });
+    </script>
+</body>
+</html>
+

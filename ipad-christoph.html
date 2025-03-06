@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrollable Text Selector</title>
+    <style>
+
+@font-face {
+    font-family: 'TimesNRCondensed';
+    src: url('TimesNRCondensed.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Karl';
+    src: url('KarlST_Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom, #eeefff, grey, #eeefff);
+    font-family: serif;
+    overflow: hidden;
+}
+
+.scroll-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    
+}
+
+.scroll-list {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    
+}
+
+.scroll-list::-webkit-scrollbar {
+    display: none;
+}
+
+.item {
+    min-height: 33vh; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    scroll-snap-align: center;
+    transition: color 0.3s, transform 0.3s, font-size 0.3s;
+    color: gray;
+    font-size: 11vw; 
+    font-family: 'TimesNRCondensed', serif; 
+    line-height: 1;
+    letter-spacing: -0.08em; 
+    -webkit-text-stroke: 0.5px transparent; 
+}
+
+.item.selected {
+    color: #eeefff;
+    transform: scale(1.65); 
+    font-size: 14vw; 
+    text-align: left;
+}
+
+.item.selected.active {
+    color: rgb(0, 0, 0);
+}
+
+.circle-button {
+width: 350px;
+height: 350px;
+border-radius: 50%;
+background-color: #000000; /* все кнопки кроме инфо */
+border: none;
+color: white;
+font-family: 'Karl', serif;
+font-size: 100px; 
+display: flex;
+justify-content: center;
+align-items: center;
+position: absolute;
+bottom: 70px;
+cursor: pointer;
+}
+
+.button-icon-x {
+height: 47%; 
+width: auto;
+object-fit: contain; 
+}
+
+.button-icon-i {
+height: 52%; 
+width: auto;
+object-fit: contain; 
+}
+
+.left-button {
+left: 70px;
+}
+
+.right-button {
+right: 70px;
+}
+
+.popup {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: white;
+padding: 20px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+z-index: 1000;
+}
+
+.popup .close-button {
+position: absolute;
+top: 20px;
+right: 20px;
+background: #a200ff;
+border: none;
+color: white;
+font-size: 20px;
+cursor: pointer;
+border-radius: 50%;
+width: 30px;
+height: 30px;
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 1000;
+}
+
+.overlay {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: 999;
+}
+
+.popup, .overlay {
+opacity: 0;
+visibility: hidden;
+transition: opacity 0.3s ease, visibility 0s 0.3s;
+}
+
+.popup.show, .overlay.show {
+opacity: 1;
+visibility: visible;
+transition: opacity 0.3s ease;
+}
+
+.popup, .overlay {
+display: block;
+}
+
+.popup-content {
+font-family: 'TimesNRCondensed', serif; 
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100%; 
+text-align: center;
+font-size: 14vw; 
+color: #a200ff; 
+transform: scale(1.65); 
+line-height: 1; 
+letter-spacing: -0.08em; 
+-webkit-text-stroke: 0.5px transparent;
+}
+
+.popup-red {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    padding: 20px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s 0.3s;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    font-family: 'Karl', sans-serif;
+}
+
+.popup-red.show {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+}
+
+.popup-red .popup-content {
+    font-family: 'Karl', sans-serif; 
+    color: white;
+    position: relative;
+    z-index: 1001;
+    letter-spacing: 0em; 
+}
+
+.close-buttonn {  /* кнопка закрытия меню */
+    position: absolute;
+    left: 70px;
+    bottom: 70px; 
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background-color: #a200ff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002;
+}
+
+.close-buttonn img {
+    height: 47%;
+    width: auto;
+    object-fit: contain;
+}
+
+.popup-ss {
+display: block;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: transparent;
+padding: 20px;
+z-index: 1000;
+opacity: 0;
+visibility: hidden;
+transition: all 0.3s ease;  /* Changed from opacity-only transition */
+font-family: 'Karl', sans-serif;
+}
+
+.popup-ss.show {
+opacity: 1;
+visibility: visible;
+}
+
+.popup-ss .popup-content {
+    font-family: 'Karl', sans-serif; 
+    background-color: red;
+    color: white;
+    position: relative;
+    z-index: 1001;
+    letter-spacing: 0em; 
+}
+
+
+.button-ss, .right-button {
+    transition: all 0.3s ease;
+}
+
+body {
+    transition: all 1s ease;
+}
+
+body.item-is-selected {
+    background: #ffffff;
+}
+
+body.item-is-selected .button-ss {
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.item-is-selected .item:not(.active){
+    opacity: 0;
+}
+
+body.item-is-selected .right-button:not(#nextButton) {
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.item-is-selected #nextButton {
+    z-index: 1000;
+    display: block;
+}
+
+body:not(.item-is-selected) .left-button#backButton{
+    opacity: 0;
+    pointer-events: none;
+}
+
+body:not(.item-is-selected) .right-button#nextButton{
+    opacity: 0;
+    pointer-events: none;
+}
+
+body:not(.item-is-selected) .left-button#backButton{
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.item-is-selected .right-button#nextButton{
+    opacity: 1;
+}
+
+body.item-is-selected .left-button#backButton{
+    opacity: 1;
+}
+
+
+
+    </style>
+</head>
+<body>
+
+    <div class="scroll-container">
+        <div class="scroll-list" id="scrollList"></div>
+    </div>
+
+    <button class="circle-button left-button button-ss">
+        <img src="x.svg" alt="Left" class="button-icon-x" id="button-ss">
+    </button>
+    <button class="circle-button right-button">
+        <img src="i.svg" alt="Right" class="button-icon-i" id="button-icon-i">
+    </button>
+    <button class="circle-button left-button" id="backButton">Back</button>
+        <button class="circle-button right-button" id="nextButton">Next</button>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="popup" id="popup">
+        <div id="popupContent"></div>
+    </div>
+
+    <div class="popup-red" id="popupRed">
+        <div id="popupRedContent" class="popup-content"></div>
+        <button class="close-button" id="closeButtonRed">
+            <img src="x.svg" alt="Close" class="button-icon-x">
+        </button>
+        <button class="circle-button right-button" style="background-color: blue;">
+            <img src="i.svg" alt="Close" class="button-icon-i">
+        </button>
+    </div>
+
+    <div class="popup-ss" id="popupSs">
+        <div id="popupSsContent" class="popup-content"></div>
+    </div>
+
+    <!-- Firebase and JavaScript -->
+    <script type="module">
+        console.log("start firebase");
+
+        // Firebase and JavaScript
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import {
+            getDatabase,
+            ref,
+            update,
+            onValue
+        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyARRByK3-QRN6BLv23JIPG7tUfcC3PU5Mk",
+            authDomain: "sosa-test-bd8ca.firebaseapp.com",
+            databaseURL: "https://sosa-test-bd8ca-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "sosa-test-bd8ca",
+            storageBucket: "sosa-test-bd8ca.appspot.com",
+            messagingSenderId: "709279438846",
+            appId: "1:709279438846:web:cb0a718e5a01374dbe52af"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const themesRef = ref(db, "themes"); // Ref to 'themes' data
+
+        // Function to create item elements dynamically
+        function createItemElement(theme) {
+            const item = document.createElement("div");
+            item.classList.add("item");
+            item.textContent = theme.title; // Use theme title for the item text
+
+            // Check if backgroundColor1 or backgroundColor2 exist, and apply them if so.
+            if (theme.backgroundColor1) {
+                item.style.backgroundColor = theme.backgroundColor1; // Only apply if defined
+            }
+
+            if (theme.backgroundColor2) {
+                item.style.color = theme.backgroundColor2; // Apply background text color if defined
+            }
+
+            // Add an event listener to the item for selecting the theme
+            item.addEventListener("click", () => {
+                if (!item.classList.contains("selected")) return;
+
+                document.body.classList.add("item-is-selected");
+
+                const selectedTheme = theme.title;
+                console.log("Item clicked:", selectedTheme);
+
+                // Remove only the 'active' class from all items
+                document.querySelectorAll(".item").forEach(el => el.classList.remove("active"));
+
+                // Add 'active' class to the clicked item
+                item.classList.add("active");
+
+                // Update Firebase with the selected theme
+                update(themesRef, { selectedTheme })
+                    .then(() => console.log("Successfully updated selected theme in Firebase:", selectedTheme))
+                    .catch(error => console.error("Error updating selected theme:", error));
+            });
+
+
+
+            return item;
+        }
+
+        // Function to render header and footer items
+        function renderHeaderFooter(scrollList) {
+            const headerItem = document.createElement("div");
+            headerItem.classList.add("item");
+            headerItem.textContent = "Words Between Us";
+            headerItem.style.color = "grey";
+            headerItem.style.fontSize = "4vw";
+            headerItem.style.opacity = "1";
+            headerItem.style.marginBottom = "calc(125px - 2vh)";
+            headerItem.style.marginTop = "-100px";
+            headerItem.style.position = "relative";
+            scrollList.prepend(headerItem);
+
+            const footerItem = headerItem.cloneNode(true);
+            footerItem.textContent = "Words Between Us";
+            footerItem.style.marginTop = "calc(125px - 2vh)";
+            footerItem.style.marginBottom = "-100px";
+            scrollList.appendChild(footerItem);
+        }
+
+        // Fetch theme titles from Firebase and render them dynamically
+
+        let getDataOnce = true;
+
+        onValue(themesRef, (snapshot) => {
+            if (getDataOnce) {
+                const data = snapshot.val();
+                console.log("Fetched Firebase data:", data);
+
+                const scrollList = document.getElementById("scrollList");
+
+                // Clear the existing items in the scroll list
+                scrollList.innerHTML = "";
+
+                if (data) {
+                    const themes = Object.values(data);
+                    console.log("Themes found:", themes);
+
+                    themes.forEach((theme, index) => {
+                        const item = createItemElement(theme);
+                        if (index === 0) item.classList.add("selected");
+                        scrollList.appendChild(item);
+                    });
+
+                    // Render header and footer items
+                    renderHeaderFooter(scrollList);
+                } else {
+                    console.log("No themes found in the data");
+                }
+
+                getDataOnce = false;
+            }
+        });
+
+
+        // Initialize the scroll container
+        const scrollList = document.getElementById("scrollList");
+
+        function getCenterItem() {
+            let containerRect = scrollList.getBoundingClientRect();
+            let centerY = containerRect.top + containerRect.height / 2;
+
+            let closestItem = null;
+            let minDistance = Infinity;
+
+            let items = [...document.querySelectorAll(".item")];
+
+            items.forEach(item => {
+                let itemRect = item.getBoundingClientRect();
+                let itemCenterY = itemRect.top + itemRect.height / 2;
+                let distance = Math.abs(centerY - itemCenterY);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestItem = item;
+                }
+            });
+
+            return closestItem;
+        }
+
+        function highlightCenterItem() {
+            const centerItem = getCenterItem();
+
+            let items = [...document.querySelectorAll(".item")];
+            items.forEach(item => item.classList.remove("selected"));
+
+            if (centerItem) {
+                centerItem.classList.add("selected");
+            }
+        }
+
+        scrollList.addEventListener("scroll", () => {
+
+            document.body.classList.remove("item-is-selected");
+
+            highlightCenterItem();
+        });
+
+
+        /*
+        if (!isAtBottom) {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const centerItem = getCenterItem();
+                if (centerItem) {
+                    const containerRect = scrollList.getBoundingClientRect();
+                    const itemRect = centerItem.getBoundingClientRect();
+                    const scrollY = scrollList.scrollTop + (itemRect.top - containerRect.top) - (containerRect.height / 2) + (itemRect.height / 2);
+
+                    scrollList.scrollTo({
+                        top: scrollY,
+                        behavior: "smooth"
+                    });
+                }
+            }, 100);
+        }
+        */
+
+
+        highlightCenterItem();
+
+
+
+
+        const popup = document.getElementById("popup");
+        const overlay = document.getElementById("overlay");
+        const closeButton = document.querySelector(".close-button");
+        const popupContent = document.getElementById("popupContent");
+        const backButton = document.getElementById("backButton");
+
+        function showPopup(content) {
+            const selectedItem = document.querySelector(".selected");
+
+            if (selectedItem) {
+                popupContent.textContent = content;
+
+                const computedStyle = window.getComputedStyle(selectedItem);
+
+                popupContent.style.fontFamily = "'TimesNRCondensed', serif";
+                popupContent.style.fontSize = computedStyle.fontSize;
+                popupContent.style.transform = "translate(-50%, -50%) " + computedStyle.transform;
+                popupContent.style.lineHeight = computedStyle.lineHeight;
+                popupContent.style.letterSpacing = computedStyle.letterSpacing;
+                popupContent.style.textAlign = "center";
+                popupContent.style.position = "absolute";
+                popupContent.style.top = "49%";
+                popupContent.style.left = "50%";
+                popupContent.style.width = "100%";
+
+            }
+
+            popup.classList.add("show");
+            overlay.classList.add("show");
+        }
+
+        function hidePopup() {
+            popup.classList.remove("show");
+            overlay.classList.remove("show");
+        }
+
+        backButton.addEventListener("click", hidePopup);
+        overlay.addEventListener("click", hidePopup);
+
+
+        let items = [...document.querySelectorAll(".item")];
+
+
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                items.forEach(item => item.classList.remove('selected')); // Remove previous selection
+                item.classList.add('selected'); // Highlight clicked item
+                showPopup(item.textContent); // Show popup with item content
+            });
+        });
+
+        const popupRed = document.getElementById("popupRed");
+        const popupRedContent = document.getElementById("popupRedContent");
+        const closeButtonRed = document.getElementById("closeButtonRed");
+        const rightButton = document.querySelector(".right-button");
+
+        function showRedPopup() {
+            const selectedItem = document.querySelector(".selected");
+
+            if (selectedItem) {
+
+                const computedStyle = window.getComputedStyle(selectedItem);
+                const textContents = [
+                    "This work is an imprint in the personal digital space. At times, its complex, oddly structured grammatical formulations and sentences reflect how a native language can become foreign, while a foreign language transforms into the only space truly open for sincere self-expression. And sincerity—the goal of people who become friends—only unfolds after the entirety of our life experiences has been mixed and reprocessed through vectors and depersonalized linguistic chains.",
+                    "We explore how verbal expression can act as a barrier to understanding one another, as well as the layer of meaning hidden behind every sentence—one that is so difficult to articulate and convey through words.",
+                    "Words Between Us was created using a language model built on NLTK. With a database consisting of records of our conversations, it revealed an averaged-out version of ourselves—dialogues that simultaneously contain all the meaning of our words and none at all; words that used to mean so much and yet nothing."
+                ];
+
+                popupRedContent.innerHTML = textContents.join("<br><br>");
+
+                popupRedContent.style.fontFamily = "'Karl', sans-serif";
+                popupRedContent.style.fontSize = "30px";
+                popupRedContent.style.transform = "translate(-50%, -50%) " + computedStyle.transform;
+                popupRedContent.style.lineHeight = "100%";
+                popupRedContent.style.textAlign = "center";
+                popupRedContent.style.position = "absolute";
+                popupRedContent.style.top = "45%";
+                popupRedContent.
+                style.left = "50%";
+                popupRedContent.style.width = "50%";
+            }
+
+            popupRed.classList.add("show");
+            overlay.classList.add("show");
+        }
+
+        function hideRedPopup() {
+            popupRed.classList.remove("show");
+            overlay.classList.remove("show");
+        }
+
+        rightButton.addEventListener("click", showRedPopup);
+        closeButtonRed.addEventListener("click", hideRedPopup);
+        overlay.addEventListener("click", () => {
+            hidePopup();
+            hideRedPopup();
+        });
+
+
+        const popupSs = document.getElementById("popupSs");
+        const popupSsContent = document.getElementById("popupSsContent");
+        const ssButton = document.querySelector(".button-ss");
+
+        console.log(ssButton);
+
+        function showPopupSs() {
+            console.log("showPopupSs");
+            const selectedItem = document.querySelector(".selected");
+
+            if (selectedItem) {
+                console.log("showPopupSs: selected item");
+
+                const computedStyle = window.getComputedStyle(selectedItem);
+                const textContents = [
+                    "tap to enter"
+                ];
+
+                popupSsContent.innerHTML = textContents.join("<br><br>");
+
+                popupSsContent.style.fontFamily = "'Karl', sans-serif";
+                popupSsContent.style.fontSize = "30px";
+                popupSsContent.style.transform = "translate(-50%, -50%) " + computedStyle.transform;
+                popupSsContent.style.lineHeight = "100%";
+                popupSsContent.style.textAlign = "center";
+                popupSsContent.style.position = "absolute";
+                popupSsContent.style.top = "45%";
+                popupSsContent.style.left = "50%";
+                popupSsContent.style.width = "100%";
+                popupSsContent.style.backgroundColor = "red";
+            }
+
+            popupSs.classList.add("show");
+            overlay.classList.add("show");
+        }
+
+        function hidePopupSs() {
+            requestAnimationFrame(() => { // Use requestAnimationFrame for smoother transitions
+                popupSs.classList.remove("show");
+                overlay.classList.remove("show");
+            });
+        }
+
+        popupSs.addEventListener("click", (e) => {
+            e.preventDefault(); // Prevent any default behaviors
+            hidePopupSs();
+        });
+
+        ssButton.addEventListener("click", showPopupSs);
+        //   closeButtonRed.addEventListener("click", hidePopupSs);
+        overlay.addEventListener("click", () => {
+            hidePopup();
+            hidePopupSS();
+        });
+
+
+        document.getElementById('backButton').addEventListener('click', function() {
+    // Reset page settings
+    document.body.classList.remove('item-is-selected'); // Remove class to revert to default state
+    
+    // Reset styles if you used inline styles or dynamically changed CSS
+    const items = document.querySelectorAll('.item');
+    items.forEach(item => {
+        item.style.zIndex = '0';  // Reset z-index
+        item.style.display = '0'; // Reset display (or set to default value)
+    });
+});
+
+
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPad Theme Controller</title>
+</head>
+<body>
+    <h1>Выбор темы</h1>
+    <div id="themeButtons"></div>
+    <h2 id="selectedTheme">Выбрана тема: —</h2>
+
+    <h1>Реплики</h1>
+    <h3>Экран 1:</h3>
+    <p id="replicaText1">—</p>
+    
+    <h3>Экран 2:</h3>
+    <p id="replicaText2">—</p>
+
+    <button id="nextReplicaButton">Следующая реплика</button>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyARRByK3-QRN6BLv23JIPG7tUfcC3PU5Mk",
+            authDomain: "sosa-test-bd8ca.firebaseapp.com",
+            databaseURL: "https://sosa-test-bd8ca-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "sosa-test-bd8ca",
+            storageBucket: "sosa-test-bd8ca.appspot.com",
+            messagingSenderId: "709279438846",
+            appId: "1:709279438846:web:cb0a718e5a01374dbe52af"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        console.log("✅ Firebase подключён!");
+
+        let selectedThemeKey = ""; 
+
+        function loadThemes() {
+            const themesRef = ref(database, "themes");
+            get(themesRef).then(snapshot => {
+                if (snapshot.exists()) {
+                    const themesData = snapshot.val();
+                    console.log("🔥 Firebase themes:", themesData);
+
+                    const container = document.getElementById("themeButtons");
+                    container.innerHTML = '';
+
+                    Object.keys(themesData).forEach(themeKey => {
+                        if (themeKey.startsWith("theme")) {
+                            let btn = document.createElement("button");
+                            btn.textContent = themesData[themeKey].selectedTheme;
+                            btn.onclick = () => selectTheme(themeKey);
+                            container.appendChild(btn);
+                        }
+                    });
+
+                } else {
+                    console.error("❌ Данные в Firebase отсутствуют.");
+                }
+            }).catch(error => {
+                console.error("Ошибка загрузки тем:", error);
+            });
+        }
+
+        function selectTheme(themeKey) {
+            const ipadRef = ref(database, "themes/ipad");
+            const displaysRef = ref(database, "themes/displays");
+
+            update(ipadRef, { selectedTheme: themeKey, currentReplicaIndex1: 0, currentReplicaIndex2: 0 })
+                .then(() => {
+                    console.log(`✔️ Тема ${themeKey} выбрана в Firebase`);
+                })
+                .catch(error => {
+                    console.error("❌ Ошибка обновления выбранной темы:", error);
+                });
+
+            update(displaysRef, { selectedTheme: themeKey, currentReplicaIndex1: 0, currentReplicaIndex2: 0 })
+                .then(() => {
+                    console.log(`✔️ Тема ${themeKey} обновлена в displays`);
+                })
+                .catch(error => {
+                    console.error("❌ Ошибка обновления темы в displays:", error);
+                });
+
+            selectedThemeKey = themeKey; 
+
+            console.log("✔️ Тема выбрана:", themeKey);
+            document.getElementById("selectedTheme").textContent = `Выбрана тема: ${themeKey}`;
+
+            loadReplicas(themeKey);
+        }
+
+        function loadReplicas(themeKey) {
+            const themeRef = ref(database, `themes/${themeKey}`);
+            get(themeRef).then(snapshot => {
+                if (snapshot.exists()) {
+                    const themeData = snapshot.val();
+                    console.log("📥 Данные темы:", themeData);
+
+                    const { replicasScreen1, replicasScreen2 } = themeData;
+
+                    document.getElementById("replicaText1").textContent = replicasScreen1 ? replicasScreen1[0] || "—" : "—";
+                    document.getElementById("replicaText2").textContent = replicasScreen2 ? replicasScreen2[0] || "—" : "—";
+                } else {
+                    console.error("⚠️ Данные темы не найдены!");
+                }
+            }).catch(error => {
+                console.error("Ошибка загрузки реплик:", error);
+            });
+        }
+
+        function nextReplica() {
+            if (!selectedThemeKey) return; 
+
+            const ipadRef = ref(database, `themes/${selectedThemeKey}`); 
+
+            get(ipadRef).then(snapshot => {
+                if (!snapshot.exists()) return;
+
+                const { replicasScreen1, replicasScreen2, currentReplicaIndex1 = 0, currentReplicaIndex2 = 0 } = snapshot.val();
+
+                if (!replicasScreen1 || !replicasScreen2) return;
+
+                let newIndex1 = (currentReplicaIndex1 + 1) % replicasScreen1.length;
+                let newIndex2 = (currentReplicaIndex2 + 1) % replicasScreen2.length;
+
+                console.log("⬆️ Новый индекс экрана 1:", newIndex1);
+                console.log("⬆️ Новый индекс экрана 2:", newIndex2);
+
+                update(ipadRef, {
+                    currentReplicaIndex1: newIndex1,
+                    currentReplicaIndex2: newIndex2
+                }).then(() => {
+                    console.log("✅ Индексы обновлены в Firebase!");
+                    loadReplicas(selectedThemeKey);
+                }).catch(error => {
+                    console.error("❌ Ошибка обновления индексов:", error);
+                });
+
+            }).catch(error => {
+                console.error("❌ Ошибка доступа к теме в Firebase:", error);
+            });
+        }
+
+        document.getElementById("nextReplicaButton").addEventListener("click", nextReplica);
+
+        function listenForUpdates() {
+            const ipadRef = ref(database, `themes/${selectedThemeKey}`); 
+
+            onValue(ipadRef, snapshot => {
+                if (!snapshot.exists()) return;
+
+                const { replicasScreen1, replicasScreen2, currentReplicaIndex1 = 0, currentReplicaIndex2 = 0 } = snapshot.val();
+
+                if (!replicasScreen1 || !replicasScreen2) return;
+
+                console.log(`🎭 Новая реплика для экрана 1: ${replicasScreen1[currentReplicaIndex1]}`);
+                console.log(`🎭 Новая реплика для экрана 2: ${replicasScreen2[currentReplicaIndex2]}`);
+
+                document.getElementById("replicaText1").textContent = replicasScreen1[currentReplicaIndex1] || "—";
+                document.getElementById("replicaText2").textContent = replicasScreen2[currentReplicaIndex2] || "—";
+            });
+        }
+
+        window.onload = () => {
+            loadThemes();
+            listenForUpdates();
+        };
+    </script>
+</body>
+</html>

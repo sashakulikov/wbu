@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screensaver</title>
+    <style>
+        @font-face {
+            font-family: "Times";
+            src: url("TimesNRCondensed.otf") format("opentype");
+            font-weight: initial;
+        }
+
+        body {
+            font-family: "Times";
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .screensaver {
+            background-color: #ffffff;
+            z-index: 1000;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+        
+        .phrase {
+                color: #000;
+                width: 90%;
+                position: absolute;
+                text-align: center;
+                top: 37%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                letter-spacing: -20px;
+                line-height: 105%;
+                font-size: 22vh;
+                font-weight: 400; 
+                -webkit-font-smoothing: antialiased; 
+                -webkit-text-stroke: 2px black;
+            }
+
+            .header, .footer {
+                font-family: "Times";
+                color: #a0a0a0;
+                width: 100%;
+                position: absolute;
+                text-align: center;
+                font-size: 5vh;
+                letter-spacing: -3.5px;
+                -webkit-text-stroke: 0.8px #a0a0a0;
+            }
+
+
+        .header {
+            top: -10px;
+        }
+
+        .footer {
+            bottom: -20px;
+        }
+
+        #typed-strings {
+            display: none; /* Hide the original text container */
+        }
+    </style>
+</head>
+<body>
+    
+<div class="screensaver">
+    <div id="typed-strings" class="phrase">
+        <p>&lt;...&gt;<br>but right words still to be found</p>
+        <p>&lt;...&gt;<br>but it changes as<br>I try to explain</p>
+        <p>&lt;...&gt;<br>but it feels different<br>once I say it</p>
+        <p>&lt;...&gt;<br>but some things get<br>lost on the way</p>
+    </div>
+    <div class="header">
+        <p>Words Between Us</p>
+    </div>
+    <div class="footer">
+        <p>Sasha</p>
+    </div>
+
+    <h1 id="typed" class="phrase"></h1>
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+    <script>
+        // Typing animation
+        var typed = new Typed('#typed', {
+            stringsElement: '#typed-strings',
+            typeSpeed: 70,         // Speed of typing
+            backSpeed: 50,         // Speed of backspacing
+            startDelay: 500,       // Delay before typing starts
+            backDelay: 3000,       // Delay before backspacing starts
+            loop: true,            // Loop the animation
+            showCursor: false,     // Display the blinking cursor
+            cursorChar: '|',       // Customize cursor character
+            smartBackspace: true   // Only backspace what doesn't match the previous string
+        });
+    </script>
+</div>
+</body>
+</html>

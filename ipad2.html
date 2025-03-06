@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPad Theme Controller</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyARRByK3-QRN6BLv23JIPG7tUfcC3PU5Mk",
+            authDomain: "sosa-test-bd8ca.firebaseapp.com",
+            databaseURL: "https://sosa-test-bd8ca-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "sosa-test-bd8ca",
+            storageBucket: "sosa-test-bd8ca.firebasestorage.app",
+            messagingSenderId: "709279438846",
+            appId: "1:709279438846:web:cb0a718e5a01374dbe52af"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        console.log("✅ Firebase подключён!");
+
+        // Загружаем доступные темы из Firebase
+        function loadThemes() {
+            const themesRef = ref(database, "themes");
+            get(themesRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const themesData = snapshot.val();
+                    console.log("🔥 Firebase themes:", themesData);
+
+                    const container = document.getElementById("themeButtons");
+                    container.innerHTML = '';
+
+                    Object.keys(themesData).forEach(themeKey => {
+                        if (themeKey.startsWith("theme")) {
+                            let btn = document.createElement("button");
+                            btn.textContent = themeKey; // Используйте themeKey для отображения названия темы
+                            btn.onclick = () => selectTheme(themeKey);
+                            container.appendChild(btn);
+                        }
+                    });
+
+                } else {
+                    console.error("❌ Данные в Firebase отсутствуют.");
+                }
+            }).catch(error => {
+                console.error("Ошибка загрузки тем:", error);
+            });
+        }
+
+        // Выбираем тему
+        function selectTheme(themeKey) {
+            const ipadRef = ref(database, "themes/ipad");
+            const displaysRef = ref(database, "themes/displays");
+
+            update(ipadRef, { selectedTheme: themeKey, currentReplicaIndex: 0 });
+            update(displaysRef, { selectedTheme: themeKey, currentReplicaIndex: 0 });
+
+            console.log("✔️ Тема выбрана:", themeKey);
+            document.getElementById("selectedTheme").textContent = `Выбрана тема: ${themeKey}`;
+
+            loadReplicas(themeKey);
+        }
+
+        // Загружаем реплики выбранной темы
+        function loadReplicas(themeKey) {
+            const replicasRef = ref(database, `themes/${themeKey}/replicas`);
+            get(replicasRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const replicas = snapshot.val();
+                    if (replicas && replicas.length > 0) {
+                        console.log("📥 Реплики загружены:", replicas);
+                        document.getElementById("replicaText").textContent = replicas[0] || "—";
+                    } else {
+                        console.error("⚠️ Реплики пустые!");
+                    }
+                } else {
+                    console.error("⚠️ Реплики не найдены!");
+                }
+            }).catch(error => {
+                console.error("Ошибка загрузки реплик:", error);
+            });
+        }
+
+        // Переход к следующей реплике
+        function nextReplica() {
+            const ipadRef = ref(database, "themes/ipad");
+            get(ipadRef).then((snapshot) => {
+                if (!snapshot.exists()) return;
+
+                const { selectedTheme, currentReplicaIndex } = snapshot.val();
+                const replicasRef = ref(database, `themes/${selectedTheme}/replicas`);
+
+                get(replicasRef).then((replicasSnapshot) => {
+                    if (!replicasSnapshot.exists()) return;
+                    const replicas = replicasSnapshot.val();
+                    let newIndex = (currentReplicaIndex + 1) % replicas.length;
+
+                    update(ipadRef, { currentReplicaIndex: newIndex });
+                    update(ref(database, "themes/displays"), { currentReplicaIndex: newIndex });
+
+                    console.log("➡️ Следующая реплика:", newIndex);
+                    document.getElementById("replicaText").textContent = replicas[newIndex];
+                });
+            }).catch(error => {
+                console.error("Ошибка при обновлении реплики:", error);
+            });
+        }
+
+        // Слушаем изменения на кнопке перехода к следующей реплике
+        document.getElementById("nextReplicaBtn").addEventListener("click", nextReplica);
+
+        // Загрузка тем при старте
+        loadThemes();
+
+        // Слушаем изменения на выбранной теме на айпаде
+        const ipadRef = ref(database, "themes/ipad");
+        onValue(ipadRef, (snapshot) => {
+            const ipadData = snapshot.val(); // Данные с айпада
+            if (!ipadData || !ipadData.selectedTheme) {
+                console.warn("⚠️ Тема не выбрана на iPad!");
+                return;
+            }
+
+            const selectedTheme = ipadData.selectedTheme;
+            console.log("🎨 Выбранная тема:", selectedTheme);
+
+            const themeRef = ref(database, `themes/${selectedTheme}`);
+            onValue(themeRef, (snapshot) => {
+                const themeData = snapshot.val();
+                console.log("📥 Данные темы:", themeData);
+
+                // Применяем выбранную тему на странице
+                if (themeData && themeData.panorama) {
+                    document.body.style.backgroundImage = `url(${themeData.panorama})`;
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Выберите тему</h1>
+    <div id="themeButtons"></div>
+
+    <h2 id="selectedTheme">Тема не выбрана</h2>
+    <p>Реплика: <span id="replicaText">—</span></p>
+    <button id="nextReplicaBtn">Следующая реплика</button>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screensaver</title>
+    <style>
+        @font-face {
+            font-family: "Times";
+            src: url("TimesNRCondensed.otf") format("opentype");
+            font-weight: initial;
+        }
+
+        body {
+            font-family: "Times";
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .screensaver {
+            /* background-color: #984444; */
+            z-index: 1000;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+        
+        .header, .footer {
+            font-family: "Times";
+            color: #282828;
+            width: 100%;
+            position: absolute;
+            text-align: center;
+            font-size: 5vh;
+            letter-spacing: -3.5px;
+            -webkit-text-stroke: 0.8px #282828;
+        }
+
+        .header {
+            top: -10px;
+            /* display: none; */
+        }
+
+        .footer {
+            bottom: -20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="header">
+        <p>Words Between Us</p>
+    </div>
+    <div class="footer">
+        <p>Words Between Us</p>
+    </div>
+
+    <script src="p5.min.js"></script>
+    <script src="script2-2.js"></script>
+</div>
+</body>
+</html>

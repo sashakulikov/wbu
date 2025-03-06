@@ -1,0 +1,273 @@
+
+@font-face {
+    font-family: 'TimesNRCondensed';
+    src: url('TimesNRCondensed.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Karl';
+    src: url('KarlST_Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom, #eeefff, grey, #eeefff);
+    font-family: serif;
+    overflow: hidden;
+}
+
+.scroll-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    
+}
+
+.scroll-list {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    
+}
+
+.scroll-list::-webkit-scrollbar {
+    display: none;
+}
+
+.item {
+    min-height: 33vh; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    scroll-snap-align: center;
+    transition: color 0.3s, transform 0.3s, font-size 0.3s;
+    color: gray;
+    font-size: 11vw; 
+    font-family: 'TimesNRCondensed', serif; 
+    line-height: 1;
+    letter-spacing: -0.08em; 
+    -webkit-text-stroke: 0.5px transparent; 
+}
+
+.selected {
+    color: #eeefff;
+    transform: scale(1.65); 
+    font-size: 14vw; 
+    text-align: left;
+}
+
+.circle-button {
+width: 350px;
+height: 350px;
+border-radius: 50%;
+background-color: #a200ff; /* все кнопки кроме инфо */
+border: none;
+color: white;
+font-family: 'Karl', serif;
+font-size: 100px; 
+display: flex;
+justify-content: center;
+align-items: center;
+position: absolute;
+bottom: 70px;
+cursor: pointer;
+}
+
+.button-icon-x {
+height: 47%; 
+width: auto;
+object-fit: contain; 
+}
+
+.button-icon-i {
+height: 52%; 
+width: auto;
+object-fit: contain; 
+}
+
+.left-button {
+left: 70px;
+}
+
+.right-button {
+right: 70px;
+}
+
+.popup {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: white;
+padding: 20px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+z-index: 1000;
+}
+
+.popup .close-button {
+position: absolute;
+top: 20px;
+right: 20px;
+background: #a200ff;
+border: none;
+color: white;
+font-size: 20px;
+cursor: pointer;
+border-radius: 50%;
+width: 30px;
+height: 30px;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.overlay {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: 999;
+}
+
+.popup, .overlay {
+opacity: 0;
+visibility: hidden;
+transition: opacity 0.3s ease, visibility 0s 0.3s;
+}
+
+.popup.show, .overlay.show {
+opacity: 1;
+visibility: visible;
+transition: opacity 0.3s ease;
+}
+
+.popup, .overlay {
+display: block;
+}
+
+.popup-content {
+font-family: 'TimesNRCondensed', serif; 
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100%; 
+text-align: center;
+font-size: 14vw; 
+color: #a200ff; 
+transform: scale(1.65); 
+line-height: 1; 
+letter-spacing: -0.08em; 
+-webkit-text-stroke: 0.5px transparent;
+}
+
+.popup-red {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    padding: 20px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s 0.3s;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    font-family: 'Karl', sans-serif;
+}
+
+.popup-red.show {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+}
+
+.popup-red .popup-content {
+    font-family: 'Karl', sans-serif; 
+    color: white;
+    position: relative;
+    z-index: 1001;
+    letter-spacing: 0em; 
+}
+
+.close-buttonn {  /* кнопка закрытия меню */
+    position: absolute;
+    left: 70px;
+    bottom: 70px; 
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background-color: #a200ff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002;
+}
+
+.close-buttonn img {
+    height: 47%;
+    width: auto;
+    object-fit: contain;
+}
+
+.popup-ss {
+display: block;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: transparent;
+padding: 20px;
+z-index: 1000;
+opacity: 0;
+visibility: hidden;
+transition: all 0.3s ease;  /* Changed from opacity-only transition */
+font-family: 'Karl', sans-serif;
+}
+
+.popup-ss.show {
+opacity: 1;
+visibility: visible;
+}
+
+.popup-ss .popup-content {
+    font-family: 'Karl', sans-serif; 
+    background-color: red;
+    color: white;
+    position: relative;
+    z-index: 1001;
+    letter-spacing: 0em; 
+}

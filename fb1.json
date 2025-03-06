@@ -1,0 +1,149 @@
+{
+    "themes": {
+      "theme1": {
+        "selectedTheme": "Geography",
+        "question": "What is the geography of our world?",
+        "scriptScreen1": "script1-1.js",
+        "scriptScreen2": "script1-2.js",
+        "replicasScreen1": [
+          "I could tell them about something, but they’d just respond with, “Oh, okay, cool.” Sorry if my answers sound sad — it’s just how it is.",
+          "Phrase 1"
+        ],
+        "replicasScreen2": [
+          "I always felt close to them. Some kind of connection to dive deeper — into how the very beginning feels, an early stage of everything. There was a huge fixation on it. I needed them. I can feel so I know.",
+          "Phrase 2"
+        ],
+        "currentReplicaIndex1": 0,
+        "currentReplicaIndex2": 0
+      },
+      "theme2": {
+        "selectedTheme": "Philosophy",
+        "question": "What does philosophy mean to you?",
+        "scriptScreen1": "script1-1.js",
+        "scriptScreen2": "script1-2.js",
+        "replicasScreen1": [
+          "To contemplate is to stand in front of questions without immediate answers, to embrace the unknown and the unspoken.",
+          "Philosophy 1"
+        ],
+        "replicasScreen2": [
+          "Philosophy is not about finding the right answers, but about recognizing the endless layers of questions that never seem to end.",
+          "Philosophy 2"
+        ],
+        "currentReplicaIndex1": 0,
+        "currentReplicaIndex2": 0
+      },
+      "theme3": {
+        "selectedTheme": "Memory",
+        "question": "How do memories shape who we are?",
+        "scriptScreen1": "script1-1.js",
+        "scriptScreen2": "script1-2.js",
+        "replicasScreen1": [
+          "Memories fade, but the echoes of them are always present. I don’t know if I’m remembering or just repeating something I once knew.",
+          "Memory 1"
+        ],
+        "replicasScreen2": [
+          "Sometimes I wonder if memories are just stories we tell ourselves, hoping they’re real, hoping they matter.",
+          "Memory 2"
+        ],
+        "currentReplicaIndex1": 0,
+        "currentReplicaIndex2": 0
+      },
+      "theme4": {
+        "selectedTheme": "Identity",
+        "question": "Who are you, really?",
+        "scriptScreen1": "script1-1.js",
+        "scriptScreen2": "script1-2.js",
+        "replicasScreen1": [
+          "Who am I, really? Not the name, not the past, but what’s underneath all of that?",
+          "Identity 1"
+        ],
+        "replicasScreen2": [
+          "Identity is a fluid thing. It’s ever-changing, shifting in the winds of our experience.",
+          "Identity 2"
+        ],
+        "currentReplicaIndex1": 0,
+        "currentReplicaIndex2": 0
+      },
+      "theme5": {
+        "selectedTheme": "Love",
+        "question": "What does love mean?",
+        "scriptScreen1": "script1-1.js",
+        "scriptScreen2": "script1-2.js",
+        "replicasScreen1": [
+          "Love is not just an emotion, it’s a feeling that transcends time, space, and reason.",
+          "Love 1"
+        ],
+        "replicasScreen2": [
+          "You don’t have to say it. You just feel it. It’s there in every glance, every gesture, every silent moment.",
+          "Love 2"
+        ],
+        "currentReplicaIndex1": 0,
+        "currentReplicaIndex2": 0
+      },
+      "theme6": {
+        "selectedTheme": "Time",
+        "question": "What is time?",
+        "scriptScreen1": "script1-1.js",
+        "scriptScreen2": "script1-2.js",
+        "replicasScreen1": [
+          "Time is an illusion we all buy into, but there’s no stopping it. It rushes, it slows, but it never truly halts.",
+          "Time 1"
+        ],
+        "replicasScreen2": [
+          "We measure it, we chase it, but in the end, it’s the moments we’ve lived, not the clock, that define us.",
+          "Time 2"
+        ],
+        "currentReplicaIndex1": 0,
+        "currentReplicaIndex2": 0
+      },
+      "theme7": {
+        "selectedTheme": "Nature",
+        "question": "What is the role of nature in your life?",
+        "scriptScreen1": "script1-1.js",
+        "scriptScreen2": "script1-2.js",
+        "replicasScreen1": [
+          "The natural world hums in a language we don’t always understand, but we feel its rhythm, its pulse.",
+          "Nature 1"
+        ],
+        "replicasScreen2": [
+          "I think nature speaks to us, not in words, but in the silence between moments, in the way the air feels.",
+          "Nature 2"
+        ],
+        "currentReplicaIndex1": 0,
+        "currentReplicaIndex2": 0
+      },
+      "theme8": {
+        "selectedTheme": "Dreams",
+        "question": "What do dreams tell us about ourselves?",
+        "scriptScreen1": "script1-1.js",
+        "scriptScreen2": "script1-2.js",
+        "replicasScreen1": [
+          "Dreams are the whispers of our subconscious, the stories we forget once we wake up, but they linger in the corners of our minds.",
+          "Dreams 1"
+        ],
+        "replicasScreen2": [
+          "What’s real and what’s a dream? Sometimes, the lines blur, and we’re left wondering if we’re still asleep.",
+          "Dreams 2"
+        ],
+        "currentReplicaIndex1": 0,
+        "currentReplicaIndex2": 0
+      },
+      "theme9": {
+        "selectedTheme": "Technology",
+        "question": "How does technology shape our lives?",
+        "scriptScreen1": "script1-1.js",
+        "scriptScreen2": "script1-2.js",
+        "replicasScreen1": [
+          "We’ve built a world of machines, but are we any more connected? We’ve programmed logic, but we’ve forgotten the human side.",
+          "Technology 1"
+        ],
+        "replicasScreen2": [
+          "Technology was supposed to bring us closer, but now it feels like it’s just another barrier, another wall between us.",
+          "Technology 2"
+        ],
+        "currentReplicaIndex1": 0,
+        "currentReplicaIndex2": 0
+      }
+    }
+  }
+  

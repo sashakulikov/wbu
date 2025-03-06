@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen 1</title>
+    <style>
+        @font-face {
+            font-family: "Times";
+            src: url("TimesNRCondensed.otf") format("opentype");
+            font-weight: initial;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        h1 {
+            font-family: "Times";
+            font-weight: initial;
+            color: #fff;
+            width: 90%;
+            position: absolute;
+            text-align: center;
+            top: 42%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            letter-spacing: -7px;
+            line-height: 117%;
+            font-size: 10vh;
+            -webkit-text-stroke: 1.5px rgb(255, 255, 255);
+        }
+
+        .caption-1, .caption-2 {
+            font-family: "Arial";
+            color: #fff;
+            width: 100%;
+            position: absolute;
+            text-align: center;
+            font-size: 2.8vh;
+            letter-spacing: 0px;
+            -webkit-text-stroke: 0.8px rgb(255, 255, 255);
+        }
+
+        .caption-1 {
+            top: 3.1%;
+        }
+
+        .caption-2 {
+            bottom: 3.5%;
+        }
+    </style>
+
+    <script src="p5.min.js"></script>
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+</head>
+<body>
+    <div class="caption-1">Sonya</div>
+    <div class="caption-2" id="theme-name">Loading...</div>
+    <h1 id="typed"></h1>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyARRByK3-QRN6BLv23JIPG7tUfcC3PU5Mk",
+            authDomain: "sosa-test-bd8ca.firebaseapp.com",
+            databaseURL: "https://sosa-test-bd8ca-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "sosa-test-bd8ca",
+            storageBucket: "sosa-test-bd8ca.firebasestorage.app",
+            messagingSenderId: "709279438846",
+            appId: "1:709279438846:web:cb0a718e5a01374dbe52af"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let typedInstance = null;
+        let currentReplicaIndex = 0; // Индекс текущей реплики
+        let isTyping = false; // Флаг, проверяющий, идет ли набор текста
+        let lastSelectedTheme = null; // Хранение предыдущей темы
+
+        const ipadRef = ref(db, "themes/ipad");
+
+        // Слушаем изменения данных на iPad
+        onValue(ipadRef, (snapshot) => {
+            const ipadData = snapshot.val();
+            console.log("📥 Данные с iPad:", ipadData);
+
+            if (!ipadData || !ipadData.selectedTheme) {
+                console.warn("⚠️ Тема не выбрана на iPad!");
+                return;
+            }
+
+            const selectedTheme = ipadData.selectedTheme;
+            console.log("🎨 Выбранная тема:", selectedTheme);
+
+            if (selectedTheme !== lastSelectedTheme) {
+                // Смена темы — сбрасываем индекс реплики и начинаем с первой
+                currentReplicaIndex = 0;
+                lastSelectedTheme = selectedTheme; // Обновляем последнюю выбранную тему
+            }
+
+            // Получаем данные для выбранной темы
+            const themeRef = ref(db, `themes/${selectedTheme}`);
+            onValue(themeRef, (snapshot) => {
+                const themeData = snapshot.val();
+                console.log("📥 Данные темы:", themeData);
+
+                if (!themeData || !themeData.replicasScreen1) {
+                    console.warn("⚠️ Реплики для первого экрана не найдены для темы:", selectedTheme);
+                    return;
+                }
+
+                const replicasScreen1 = themeData.replicasScreen1;
+                const themeName = themeData.selectedTheme || "Loading..."; // Название темы
+
+                // Обновляем название темы
+                document.getElementById("theme-name").textContent = themeName;
+
+                // Функция для отображения реплики на экране
+                function showNextReplica() {
+                    if (currentReplicaIndex < replicasScreen1.length) {
+                        if (!isTyping) {
+                            isTyping = true;
+                            typedInstance = new Typed("#typed", {
+                                strings: [replicasScreen1[currentReplicaIndex]],
+                                typeSpeed: 40,
+                                backSpeed: 20,
+                                startDelay: 500,
+                                backDelay: 500,
+                                loop: false,
+                                showCursor: false,
+                                onComplete: () => {
+                                    setTimeout(() => {
+                                        isTyping = false;
+                                    }, 500);
+                                }
+                            });
+                            currentReplicaIndex++;
+                        }
+                    }
+                }
+
+                // Функция для стирания текста
+                function eraseCurrentText() {
+                    if (typedInstance) {
+                        typedInstance.options.backSpeed = 50;
+                        typedInstance.backspace(typedInstance.text.length, 1000);
+                    }
+                }
+
+                // Слушаем изменения на iPad и сбрасываем реплики при смене темы
+                onValue(ipadRef, (snapshot) => {
+                    const ipadData = snapshot.val();
+                    if (ipadData && ipadData.selectedTheme) {
+                        eraseCurrentText(); // Стираем текст
+                        currentReplicaIndex = 0; // Сброс индекса реплики
+                        setTimeout(() => {
+                            showNextReplica(); // Печатаем первую реплику
+                        }, 1500);
+                    }
+                });
+
+                // Запускаем отображение первой реплики
+                showNextReplica();
+
+            }, (error) => {
+                console.error("Ошибка получения данных темы:", error);
+            });
+        }, (error) => {
+            console.error("Ошибка получения данных с iPad:", error);
+        });
+    </script>
+
+    <script src="script1-1.js"></script>
+</body>
+</html>
